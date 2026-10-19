@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Una sorpresa para Anahí</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#05010a;color:white;overflow-x:hidden;
+ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+ display:flex;justify-content:center;align-items:center;min-height:100vh;
+}
+
+/* MARCO ESTÉTICO EXTERIOR PROFESIONAL */
+#app-frame{
+ position:relative;width:100%;max-width:450px;min-height:100vh;
+ background:#08020f;overflow:hidden;
+ box-shadow:0 0 40px rgba(255,42,133,0.3), inset 0 0 25px rgba(138,43,226,0.3);
+ border:3px solid rgba(255,184,228,0.4);
+}
+@media(min-width:460px){
+ #app-frame{height:90vh;max-height:850px;border-radius:24px;}
+}
+
+/* BOTÓN DE MÚSICA Y CANDADO */
+#music-control{
+ position:absolute;top:15px;right:15px;z-index:100;
+ background:linear-gradient(135deg, #ff2a85, #8a2be2);border:2px solid #ffb8e4;
+ color:#fff;border-radius:50%;width:46px;height:46px;
+ font-size:22px;cursor:pointer;display:flex;align-items:center;
+ justify-content:center;box-shadow:0 0 20px rgba(255,42,133,0.8);
+ backdrop-filter:blur(6px);transition:transform 0.2s;
+}
+#music-control:active{transform:scale(0.9)}
+
+#lock-btn{
+ position:absolute;top:15px;left:15px;z-index:100;
+ background:rgba(0,0,0,0.6);border:2px solid #ffe27a;
+ color:#ffe27a;border-radius:50%;width:46px;height:46px;
+ font-size:20px;cursor:pointer;display:flex;align-items:center;
+ justify-content:center;box-shadow:0 0 15px rgba(255,226,122,0.5);
+ transition:transform 0.2s;
+}
+#lock-btn:active{transform:scale(0.9)}
+
+/* PANTALLA DE BLOQUEO (TEMPORIZADOR + CÓDIGO) */
+#lock-screen{
+ position:absolute;inset:0;z-index:200;
+ background:radial-gradient(circle at center, #2b0854 0%, #0d041a 70%, #000 100%);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ padding:25px;text-align:center;
+}
+.lock-box{
+ background:rgba(26,16,47,0.95);border:2px solid #65e4ff;border-radius:20px;
+ padding:25px;width:100%;max-width:340px;box-shadow:0 0 35px rgba(101,228,255,0.4);
+}
+.countdown-grid{
+ display:flex;justify-content:center;gap:8px;margin:12px 0;
+}
+.time-box{
+ background:#110722;border:1px solid #ff758f;border-radius:10px;
+ padding:8px;min-width:62px;
+}
+.time-num{font-size:18px;font-weight:bold;color:#ffe27a}
+.time-label{font-size:9px;color:#c9b9d7;text-transform:uppercase}
+.pin-input{
+ width:100%;padding:12px;background:#0d041a;border:2px solid #ffe27a;
+ border-radius:12px;color:white;font-size:16px;text-align:center;
+ margin-top:10px;outline:none;letter-spacing:2px;
+}
+
+/* ESCENA INICIAL */
+main{
+ min-height:100%;height:100%;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;position:relative;
+ background:radial-gradient(circle at center, #3b1154 0%, #150624 60%, #05010a 100%);
+ overflow:hidden;padding:20px;
+}
+h2{font-size:16px;letter-spacing:4px;color:#ffb7e4;font-weight:600;text-align:center;margin-bottom:20px;text-shadow:0 0 12px rgba(255,183,228,0.6)}
+.stage{width:min(80vw,330px);height:300px;position:relative}
+svg{width:100%;height:100%;overflow:visible}
+.body{transform-origin:center;animation:float 3s ease-in-out infinite}
+.lid{transform-origin:50% 85%;transition:transform .8s cubic-bezier(.2,.8,.2,1.2)}
+.open .lid{transform:translate(-20px,-190px) rotate(-20deg)}
+.open .body{animation:pop .5s ease-out}
+
+button.main-btn{
+ padding:16px 38px;border:2px solid #ffc4ef;border-radius:40px;
+ background:linear-gradient(110deg,#ff3399,#7b2cbf);
+ color:white;font-size:18px;font-weight:bold;letter-spacing:1px;
+ box-shadow:0 0 30px #ff3399aa;cursor:pointer;z-index:2;margin-top:20px;
+ transition:transform 0.2s;
+}
+button.main-btn:active{transform:scale(.93)}
+
+#confetti,#balloons{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+#confetti{z-index:5}#balloons{z-index:4}
+.bit{position:absolute;top:-20px;width:8px;height:12px;background:var(--c);
+ animation:fall var(--t) linear var(--d) forwards}
+.balloon{
+ position:absolute;bottom:-130px;width:43px;height:53px;
+ background:var(--c);border:2px solid #ffffffa0;
+ border-radius:50% 50% 45% 45%;
+ box-shadow:inset -7px -5px #0002,inset 5px 4px #fff4;
+ animation:rise var(--t) ease-in var(--d) forwards
+}
+.balloon:after{content:"";position:absolute;top:51px;left:20px;height:60px;
+ border-left:1px solid #ffffff8a}
+@keyframes float{50%{transform:translateY(-8px) rotate(1deg)}}
+@keyframes pop{40%{transform:translateY(12px) scale(1.06,.92)}}
+@keyframes fall{to{transform:translate(var(--x),110vh) rotate(850deg)}}
+@keyframes rise{to{transform:translate(25px,-125vh) rotate(12deg)}}
+
+/* ESCENA DE LA TORTA CON FONDO ESPECTACULAR MEJORADO */
+#cake-scene{
+ position:absolute;inset:0;z-index:10;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ opacity:0;pointer-events:none;transition:opacity 2.5s ease;
+ overflow:hidden;
+ background: radial-gradient(circle at 50% 30%, #4a0e75 0%, #1f0636 50%, #07010f 100%);
+}
+#cake-scene.active{opacity:1;pointer-events:all}
+
+.anime-glow-bg {
+ position:absolute;inset:0;
+ background: radial-gradient(circle at 20% 20%, rgba(255, 42, 133, 0.45) 0%, transparent 45%),
+             radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.4) 0%, transparent 45%),
+             radial-gradient(circle at 50% 40%, rgba(255, 226, 122, 0.3) 0%, transparent 55%);
+ pointer-events:none;
+}
+
+/* CONTENEDOR DE ELEMENTOS FLOTANTES ULTRA-ANIMADOS */
+.anime-float-container {
+ position:absolute;inset:-60px;pointer-events:none;overflow:hidden;z-index:1;
+}
+.anime-item {
+ position:absolute;bottom:-140px;object-fit:contain;
+ animation: animeFloatSmooth linear infinite;
+ filter: drop-shadow(0 0 15px rgba(255,182,217,0.9));
+}
+@keyframes animeFloatSmooth {
+ 0% { transform: translateY(115vh) rotate(0deg) scale(0.85); opacity: 0; }
+ 15% { opacity: 0.95; }
+ 85% { opacity: 0.95; }
+ 100% { transform: translateY(-20vh) rotate(360deg) scale(1.15); opacity: 0; }
+}
+
+.cake-container{
+ position:relative;width:340px;height:340px;
+ display:flex;flex-direction:column;align-items:center;justify-content:flex-end;z-index:2;
+}
+
+/* VELAS PRO 3D EN ESPIRAL */
+.candles{display:flex;gap:24px;position:absolute;top:-10px;z-index:5}
+.candle-wrapper{display:flex;flex-direction:column;align-items:center}
+.candle-label{font-size:11px;color:#ffe27a;margin-bottom:6px;font-weight:bold;text-shadow:0 0 10px #ff2a85, 0 0 4px #000}
+.candle {
+ width:18px;height:85px;
+ background:linear-gradient(180deg, #ffb8e4, #ff2a85, #6a11cb);
+ border-radius:9px;position:relative;cursor:pointer;
+ box-shadow:0 0 20px rgba(255,42,133,0.8), inset -3px 0 6px rgba(255,255,255,0.8);
+}
+.candle::before {
+ content:"";position:absolute;inset:0;
+ background:repeating-linear-gradient(45deg, transparent, transparent 7px, rgba(255,255,255,0.7) 7px, rgba(255,255,255,0.7) 14px);
+ border-radius:9px;
+}
+.candle::after {
+ content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+ width:3px;height:8px;background:#ffd700;box-shadow:0 0 8px #ffd700;
+}
+.flame {
+ position:absolute;top:-34px;left:50%;transform:translateX(-50%);
+ width:20px;height:32px;
+ background:radial-gradient(circle, #ffffff 10%, #ffe27a 35%, #ff3b00 75%, transparent 100%);
+ border-radius:50% 50% 20% 20%;
+ box-shadow:0 0 25px #ffe27a, 0 0 40px #ff3b00, 0 0 60px #ff0055;
+ opacity:0;transition:opacity 1s ease;
+ animation:flickerPro .4s infinite alternate
+}
+.flame.lit{opacity:1}
+.flame.out{opacity:0 !important}
+
+@keyframes flickerPro{
+ 0%{transform:translateX(-50%) scale(1) rotate(-4deg)}
+ 100%{transform:translateX(-50%) scale(1.2) rotate(4deg)}
+}
+
+/* PASTEL ANIME LIMPIO Y ESTILIZADO */
+.pro-anime-cake {
+ width:100%;height:220px;position:relative;
+ filter:drop-shadow(0 25px 35px rgba(0,0,0,0.85));
+}
+
+.instruction-text{
+ margin-top:25px;font-size:15px;color:#ffe27a;
+ text-align:center;letter-spacing:1px;opacity:0;transition:opacity 1s ease;
+ max-width:85%;text-shadow:0 0 10px rgba(0,0,0,0.9), 0 0 8px #ff2a85;z-index:2;
+}
+.instruction-text.show{opacity:1}
+
+.modal-overlay{
+ position:absolute;inset:0;background:rgba(8,2,15,0.9);
+ z-index:20;display:flex;align-items:center;justify-content:center;
+ padding:15px;opacity:0;pointer-events:none;transition:opacity .5s ease;
+ backdrop-filter:blur(6px);
+}
+.modal-overlay.active{opacity:1;pointer-events:all}
+
+.close-btn{
+ margin-top:15px;padding:10px 22px;background:#ffb703;color:#2b1055;
+ border:none;border-radius:20px;font-weight:bold;cursor:pointer;
+ box-shadow:0 0 15px rgba(255,183,3,0.5);
+}
+
+.paper-box {
+ background: linear-gradient(135deg, #fdf0d5, #f7d9c4);
+ border: 3px solid #d4a373;
+ border-radius: 12px;
+ padding: 25px;
+ max-width: 380px;
+ width: 100%;
+ text-align: center;
+ box-shadow: 0 0 35px rgba(212, 163, 115, 0.6), inset 0 0 40px rgba(189, 140, 95, 0.2);
+ color: #3a2e2b;
+ line-height: 1.6;
+ font-size: 14px;
+ max-height: 75vh;
+ overflow-y: auto;
+ font-family: 'Georgia', serif;
+}
+#typed-text {
+ text-align: left;
+ min-height: 160px;
+ white-space: pre-wrap;
+ font-size: 14px;
+ line-height: 1.7;
+ color: #2c221e;
+}
+
+.card-box{
+ background:linear-gradient(135deg, #2b1055, #7597de);
+ border:2px solid #ffb703;border-radius:18px;padding:22px;
+ max-width:360px;width:100%;text-align:center;box-shadow:0 0 30px rgba(255,183,3,0.4);
+ color:#fff;line-height:1.6;font-size:14px;max-height:75vh;overflow-y:auto
+}
+
+.game-box{
+ background:#1a102f;border:2px solid #65e4ff;border-radius:20px;
+ padding:20px;width:100%;max-width:340px;text-align:center;
+ box-shadow:0 0 25px rgba(101,228,255,0.3)
+}
+.score-board{font-size:20px;color:#ffe27a;font-weight:bold;margin-bottom:10px}
+.pokeball-btn{
+ width:75px;height:75px;border-radius:50%;
+ background:linear-gradient(to bottom, #ff3b30 50%, #ffffff 50%);
+ border:4px solid #000;margin:10px auto;cursor:pointer;
+ position:relative;box-shadow:0 0 15px rgba(255,255,255,0.4);
+}
+.pokeball-btn:before{
+ content:"";position:absolute;top:50%;left:0;width:100%;height:6px;
+ background:#000;transform:translateY(-50%)
+}
+.pokeball-btn:after{
+ content:"";position:absolute;top:50%;left:50%;width:18px;height:18px;
+ background:#fff;border:4px solid #000;border-radius:50%;
+ transform:translate(-50%,-50%)
+}
+.pokeball-btn:active{transform:scale(0.92)}
+
+.poke-img-display{
+ width:85px;height:85px;object-fit:contain;margin-top:10px;
+ filter:drop-shadow(0 0 10px rgba(255,255,255,0.6));
+}
+
+.quiz-option{
+ background:#332154;border:1.5px solid #65e4ff;border-radius:12px;
+ padding:10px;margin:8px 0;cursor:pointer;font-size:13px;
+ transition:background .2s
+}
+.quiz-option:hover{background:#522e8a}
+
+/* TARJETAS DE RASPADITA */
+.scratch-container{
+ display:flex;flex-direction:column;gap:12px;margin:15px 0
+}
+.scratch-card-wrapper {
+ position:relative;width:100%;height:58px;border-radius:12px;overflow:hidden;
+ border:2px solid #ffe27a;cursor:pointer;
+}
+.scratch-content {
+ position:absolute;inset:0;background:#332154;display:flex;align-items:center;
+ justify-content:center;font-weight:bold;font-size:13px;padding:5px;text-align:center;
+}
+.scratch-content.green { background:#2a9d8f !important;border-color:#52b788 !important;color:#fff }
+.scratch-content.red { background:#e63946 !important;border-color:#ff758f !important;color:#fff }
+
+canvas.scratch-canvas {
+ position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;z-index:5;
+ touch-action:none;
+}
+
+.shake{
+ animation:shakeAnim 0.1s infinite alternate
+}
+@keyframes shakeAnim{
+ 0%{transform:translate(4px, 4px) rotate(0deg)}
+ 50%{transform:translate(-4px, -3px) rotate(1deg)}
+ 100%{transform:translate(3px, 2px) rotate(-1deg)}
+}
+
+/* GRAN FINAL */
+#darkness-screen{
+ position:absolute;inset:0;background:#000;z-index:30;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ opacity:0;pointer-events:none;transition:opacity 2s ease;
+ text-align:center;padding:20px
+}
+#darkness-screen.active{opacity:1;pointer-events:all}
+
+#final-screen{
+ position:absolute;inset:0;z-index:40;
+ background:radial-gradient(circle at center, #ff9a9e 0%, #fecfef 40%, #2b1055 100%);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ opacity:0;pointer-events:none;transition:opacity 1.5s ease;
+ text-align:center;padding:20px
+}
+#final-screen.active{opacity:1;pointer-events:all}
+
+.final-pokemon-container{
+ display:flex;align-items:center;justify-content:center;gap:10px;margin:15px 0
+}
+.final-poke-img{
+ width:80px;height:80px;object-fit:contain;
+ filter:drop-shadow(0 0 15px rgba(255,255,255,0.8));
+ animation:bounce 2s infinite alternate
+}
+@keyframes bounce{
+ 0%{transform:translateY(0)}
+ 100%{transform:translateY(-15px)}
+}
+</style>
+</head>
+<body>
+
+<div id="app-frame">
+ <button id="lock-btn" onclick="promptCode()" title="Desbloquear con código">🔒</button>
+ <button id="music-control" onclick="toggleMusic()">🔊</button>
+
+ <!-- PANTALLA DE BLOQUEO (TEMPORIZADOR + INGRESO DE CÓDIGO) -->
+ <div id="lock-screen">
+  <div class="lock-box">
+   <h3 style="color:#ffe27a;margin-top:0">🔒 Sorpresa Bloqueada</h3>
+   <p style="font-size:11px;color:#c9b9d7;margin-bottom:10px">Se abrirá automáticamente el 10 de Julio de 2027 o ingresa tu código secreto:</p>
+   <div class="countdown-grid">
+    <div class="time-box"><div class="time-num" id="days">00</div><div class="time-label">Días</div></div>
+    <div class="time-box"><div class="time-num" id="hours">00</div><div class="time-label">Hrs</div></div>
+    <div class="time-box"><div class="time-num" id="mins">00</div><div class="time-label">Min</div></div>
+    <div class="time-box"><div class="time-num" id="secs">00</div><div class="time-label">Seg</div></div>
+   </div>
+   <input type="password" id="pin-code" class="pin-input" placeholder="Código secreto..." oninput="checkPin(this.value)">
+   <p id="lock-error" style="color:#ff758f;font-size:11px;margin-top:8px;display:none">Código incorrecto</p>
+  </div>
+ </div>
+
+ <main id="scene">
+  <h2>UNA SORPRESA ESPECIAL</h2>
+  <div class="stage">
+   <svg viewBox="0 0 340 340" aria-label="Caja de regalo ilustrada">
+    <defs>
+     <linearGradient id="pink" x2="1" y2="1">
+      <stop stop-color="#ff8bd5"/><stop offset="1" stop-color="#c52b91"/>
+     </linearGradient>
+     <linearGradient id="purple" x2="1" y2="1">
+      <stop stop-color="#bd78ff"/><stop offset="1" stop-color="#642bb5"/>
+     </linearGradient>
+     <linearGradient id="gold" x2="1">
+      <stop stop-color="#fff0a0"/><stop offset="1" stop-color="#ffad45"/>
+     </linearGradient>
+    </defs>
+    <g fill="none" stroke-linecap="round" stroke-width="3">
+     <path d="M50 100l5-14 5 14 12 5-12 4-5 13-5-13-12-4z" stroke="#ffe27a"/>
+     <path d="M280 105l4-12 4 12 11 4-11 4-4 12-4-12-11-4z" stroke="#65e4ff"/>
+     <path d="M58 235l4-9 4 9 9 3-9 4-4 9-4-9-9-4z" stroke="#ff8bd3"/>
+     <path d="M275 240l5-12m-10 6h12" stroke="#a879ff"/>
+    </g>
+    <ellipse cx="170" cy="285" rx="105" ry="16" fill="#c54bcf" opacity=".2"/>
+    <g class="body">
+     <path d="M78 145L126 121 274 139 239 161 237 270 93 270Z"
+       fill="url(#purple)" stroke="#ffe5ff" stroke-width="4" stroke-linejoin="round"/>
+     <path d="M93 145L239 161 237 270 93 270Z"
+       fill="url(#pink)" stroke="#ffe5ff" stroke-width="4" stroke-linejoin="round"/>
+     <path d="M153 152L190 156 189 270 153 270Z"
+       fill="url(#gold)" stroke="#fff0c0" stroke-width="3"/>
+     <path d="M111 185q-5 20 0 38" fill="none" stroke="#ffc3e8" stroke-width="4" stroke-linecap="round"/>
+     <path d="M205 208l4-9 4 9 9 3-9 4-4 9-4-9-9-4z" fill="#ffe9a0"/>
+     <path d="M119 242l3-7 4 7 7 3-7 3-4 7-3-7-7-3z" fill="#ffb8e4"/>
+    </g>
+    <g class="lid">
+     <path d="M67 128L119 105 278 124 226 151Z"
+       fill="#f77acb" stroke="#fff0ff" stroke-width="4" stroke-linejoin="round"/>
+     <path d="M67 128L226 151 226 170 67 145Z"
+       fill="#b83caa" stroke="#fff0ff" stroke-width="4" stroke-linejoin="round"/>
+     <path d="M226 151L278 124 278 143 226 170Z"
+       fill="#873bc0" stroke="#fff0ff" stroke-width="4" stroke-linejoin="round"/>
+     <path d="M170 126Q116 102 125 80Q138 61 170 120Z"
+       fill="url(#gold)" stroke="#fff0c0" stroke-width="4"/>
+     <path d="M171 125Q190 66 221 81Q243 103 171 125Z"
+       fill="#ffcf59" stroke="#fff0c0" stroke-width="4"/>
+     <path d="M168 124Q132 140 145 163L174 135Z"
+       fill="#ffb847" stroke="#fff0c0" stroke-width="4"/>
+     <path d="M177 128Q211 136 205 158L174 136Z"
+       fill="#ffb847" stroke="#fff0c0" stroke-width="4"/>
+     <path d="M163 121Q173 115 181 125L179 137 166 137Z"
+       fill="#ff83bd" stroke="#fff0ff" stroke-width="3"/>
+     <path d="M83 130l21 7m150-12 12 3" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+   </svg>
+  </div>
+  <button class="main-btn" id="open">VER MI REGALO</button>
+ </main>
+
+ <div id="confetti"></div>
+ <div id="balloons"></div>
+
+ <div id="cake-scene">
+  <div class="anime-glow-bg"></div>
+  <div class="anime-float-container" id="anime-bg"></div>
+  <div class="cake-container">
+   <div class="candles">
+    <div class="candle-wrapper"><span class="candle-label">Carta ✉️</span><div class="candle" id="c1"><div class="flame" id="flame1"></div></div></div>
+    <div class="candle-wrapper"><span class="candle-label">Juego 🎮</span><div class="candle" id="c2"><div class="flame" id="flame2"></div></div></div>
+    <div class="candle-wrapper"><span class="candle-label">Test ⚡</span><div class="candle" id="c3"><div class="flame" id="flame3"></div></div></div>
+    <div class="candle-wrapper"><span class="candle-label">Raspa 🎴</span><div class="candle" id="c4"><div class="flame" id="flame4"></div></div></div>
+   </div>
+   
+   <svg class="pro-anime-cake" viewBox="0 0 320 220">
+    <defs>
+     <linearGradient id="creamTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#ffc2d1"/>
+      <stop offset="100%" stop-color="#ff85a1"/>
+     </linearGradient>
+     <linearGradient id="cakeBase" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff85a1"/>
+      <stop offset="50%" stop-color="#f72585"/>
+      <stop offset="100%" stop-color="#7209b7"/>
+     </linearGradient>
+    </defs>
+    <ellipse cx="160" cy="200" rx="145" ry="18" fill="#1d0d2b" opacity="0.6"/>
+    <ellipse cx="160" cy="195" rx="140" ry="15" fill="#ffffff" opacity="0.95"/>
+    <ellipse cx="160" cy="193" rx="130" ry="12" fill="#e2e2e2"/>
+    <path d="M 35 130 C 35 130, 35 185, 160 185 C 285 185, 285 130, 285 130 Z" fill="url(#cakeBase)"/>
+    <ellipse cx="160" cy="130" rx="125" ry="16" fill="#ffb3c6"/>
+    <path d="M 35 130 Q 55 155 70 135 Q 90 160 110 132 Q 135 162 160 133 Q 185 160 210 132 Q 235 158 255 134 Q 275 152 285 130 C 285 120, 35 120, 35 130 Z" fill="#ffffff"/>
+    <path d="M 70 75 C 70 75, 70 120, 160 120 C 250 120, 250 75, 250 75 Z" fill="url(#creamTop)"/>
+    <ellipse cx="160" cy="75" rx="90" ry="12" fill="#ffffff"/>
+    <path d="M 70 75 Q 85 98 105 78 Q 130 102 160 76 Q 190 100 215 78 Q 235 96 250 75 C 250 68, 70 68, 70 75 Z" fill="#ffffff"/>
+    <circle cx="95" cy="68" r="7" fill="#c70039"/><circle cx="93" cy="66" r="2" fill="#ff85a1"/>
+    <circle cx="160" cy="65" r="8" fill="#c70039"/><circle cx="157" cy="62" r="2.5" fill="#ff85a1"/>
+    <circle cx="225" cy="68" r="7" fill="#c70039"/><circle cx="223" cy="66" r="2" fill="#ff85a1"/>
+   </svg>
+  </div>
+  <div class="instruction-text" id="instruction">✨ Toca la primera vela (Carta) para empezar ✨</div>
+ </div>
+
+ <div class="modal-overlay" id="letter-modal">
+  <div class="paper-box">
+   <h3 style="color:#7f4f24;margin-top:0;font-family:'Georgia',serif">💌 Para Anahí</h3>
+   <div id="typed-text"></div>
+   <button class="close-btn" id="letter-close-btn" style="display:none;background:#bc6c25;color:#fff" onclick="closeModal('letter-modal')">Siguiente vela ✨</button>
+  </div>
+ </div>
+
+ <div class="modal-overlay" id="game-modal">
+  <div class="game-box">
+   <h3 style="color:#65e4ff;margin-top:0">⚡ Atrapa los Pokémon</h3>
+   <p style="font-size:12px;color:#c9b9d7">Toca la Pokébola para sumar puntos (Llega a 150 pts)</p>
+   <div class="score-board">Puntos: <span id="score">0</span> / 150</div>
+   <div class="pokeball-btn" onclick="tapPokeball()"></div>
+   <div id="poke-img-container"><p style="font-size:25px;margin-top:10px">❓</p></div>
+   <div id="game-result" style="display:none;margin-top:15px">
+    <p style="color:#ffe27a;font-weight:bold;font-size:15px">¡Acércate a mi para recibir tus premios! ♥️</p>
+    <button class="close-btn" onclick="closeModal('game-modal')">Continuar ♥️</button>
+   </div>
+  </div>
+ </div>
+
+ <div class="modal-overlay" id="quiz-modal">
+  <div class="card-box">
+   <h3 style="color:#65e4ff;margin-top:0">⚡ ¿Qué Pokémon serías?</h3>
+   <div id="quiz-body">
+    <p id="quiz-question" style="font-weight:bold;color:#ffe27a"></p>
+    <div id="quiz-options"></div>
+   </div>
+   <div id="quiz-result" style="display:none">
+    <div id="result-img-box"></div>
+    <h4 style="color:#ffe27a;margin:5px 0" id="result-title"></h4>
+    <p style="font-size:13px" id="result-desc"></p>
+    <button class="close-btn" onclick="closeModal('quiz-modal')">Siguiente vela ✨</button>
+   </div>
+  </div>
+ </div>
+
+ <div class="modal-overlay" id="scratch-modal">
+  <div class="card-box" id="scratch-box">
+   <h3 style="color:#ffe27a;margin-top:0">🎴 Raspa una Tarjeta</h3>
+   <p id="scratch-subtitle">Desliza el dedo o el mouse para raspar y ver qué hay:</p>
+   <div class="scratch-container">
+    <div class="scratch-card-wrapper" id="wrap-1">
+     <div class="scratch-content green" id="c-content-1">🍦 Vale por un helado del que quieras</div>
+     <canvas class="scratch-canvas" id="scratchCanvas1" onmousedown="startScratch(event, 1)" ontouchstart="startScratch(event, 1)"></canvas>
+    </div>
+    <div class="scratch-card-wrapper" id="wrap-2">
+     <div class="scratch-content red" id="c-content-2">❌ Oh no, perdiste esto: 🛍️ Te compro lo que quieras (hasta $20)</div>
+     <canvas class="scratch-canvas" id="scratchCanvas2" onmousedown="startScratch(event, 2)" ontouchstart="startScratch(event, 2)"></canvas>
+    </div>
+    <div class="scratch-card-wrapper" id="wrap-3">
+     <div class="scratch-content red" id="c-content-3">❌ Oh no, perdiste esto: 🧸 Vale por un osito de peluche</div>
+     <canvas class="scratch-canvas" id="scratchCanvas3" onmousedown="startScratch(event, 3)" ontouchstart="startScratch(event, 3)"></canvas>
+    </div>
+   </div>
+   <p id="scratch-status" style="font-weight:bold;margin-top:10px"></p>
+   <button class="close-btn" id="scratch-close" style="display:none" onclick="finishCandle4()">¡Ver qué pasa! ✨</button>
+  </div>
+ </div>
+
+ <div id="darkness-screen">
+  <h2 style="color:#ff758f;font-size:20px">Oh no... ¡se empieza a quedar todo a oscuras! 🕯️✨</h2>
+ </div>
+
+ <div id="final-screen">
+  <div class="final-pokemon-container">
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/648.png" class="final-poke-img" alt="Meloetta">
+    <span style="font-size:35px">🎻🌸</span>
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" class="final-poke-img" alt="Pikachu">
+  </div>
+  <h1 style="color:#fff;font-size:24px;margin:10px 0;text-shadow:0 0 15px #f72585">¡¡FELIZ CUMPLEAÑOS!!</h1>
+  <h2 style="color:#ffe27a;font-size:18px;margin-bottom:12px;letter-spacing:1px">Espero te haya gustado! ✨💖</h2>
+  <p style="color:#fff;font-size:13px;max-width:280px;line-height:1.5;margin-bottom:20px">
+   Gracias por ser esa persona tan increíble y especial estos casi dos años de amistad. ¡Que disfrutes al máximo tu día! 🥳
+  </p>
+  <button class="close-btn" onclick="location.reload()" style="font-size:15px;padding:10px 25px">🔄 Repetir la experiencia</button>
+ </div>
+</div>
+
+<script>
+// LÓGICA DE TEMPORIZADOR (10 DE JULIO DE 2027) + CÓDIGO 800907
+const targetDate = new Date("July 10, 2027 00:00:00").getTime();
+
+function updateCountdown() {
+ const now = new Date().getTime();
+ const distance = targetDate - now;
+
+ if(distance <= 0) {
+  unlockPage();
+  return;
+ }
+
+ const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+ const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+ const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+ const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+ document.getElementById("days").textContent = String(days).padStart(2, '0');
+ document.getElementById("hours").textContent = String(hours).padStart(2, '0');
+ document.getElementById("mins").textContent = String(minutes).padStart(2, '0');
+ document.getElementById("secs").textContent = String(seconds).padStart(2, '0');
+}
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+function checkPin(val) {
+ if(val === "800907") {
+  unlockPage();
+ } else if(val.length >= 6) {
+  document.getElementById("lock-error").style.display = "block";
+ } else {
+  document.getElementById("lock-error").style.display = "none";
+ }
+}
+
+function promptCode() {
+ const code = prompt("Ingresa el código secreto para desbloquear:");
+ if(code === "800907") {
+  unlockPage();
+ } else if(code !== null) {
+  alert("Código incorrecto");
+ }
+}
+
+function unlockPage() {
+ document.getElementById("lock-screen").style.opacity = "0";
+ setTimeout(() => {
+  document.getElementById("lock-screen").style.display = "none";
+ }, 500);
+}
+
+const scene=document.querySelector("#scene");
+const button=document.querySelector("#open");
+const confetti=document.querySelector("#confetti");
+const balloons=document.querySelector("#balloons");
+const cakeScene=document.querySelector("#cake-scene");
+const instruction=document.querySelector("#instruction");
+const musicBtn = document.querySelector("#music-control");
+const colors=["#ff5fbd","#ffe27a","#65e4ff","#a879ff","#ff9068","#a7ffcf","#fff4fc"];
+
+/* MELODÍA DULCE Y AFINADA */
+let audioCtx = null;
+let isAudioActive = false;
+let loopTimeout = null;
+
+function playMelody() {
+ if(!isAudioActive) return;
+ try {
+  if(!audioCtx) {
+   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if(audioCtx.state === 'suspended') {
+   audioCtx.resume();
+  }
+
+  const notes = [
+   329.63, 329.63, 349.23, 392.00, 392.00, 349.23, 329.63, 293.66,
+   261.63, 261.63, 293.66, 329.63, 329.63, 293.66, 293.66,
+   329.63, 329.63, 349.23, 392.00, 392.00, 349.23, 329.63, 293.66,
+   261.63, 261.63, 293.66, 329.63, 293.66, 264.00, 264.00
+  ];
+  const durations = [
+   0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4,
+   0.4, 0.4, 0.4, 0.4, 0.6, 0.2, 0.8,
+   0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4,
+   0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 1.2
+  ];
+
+  let now = audioCtx.currentTime;
+  notes.forEach((freq, i) => {
+   const osc = audioCtx.createOscillator();
+   const gain = audioCtx.createGain();
+   osc.type = "sine";
+   osc.frequency.setValueAtTime(freq, now);
+   
+   gain.gain.setValueAtTime(0.12, now);
+   gain.gain.exponentialRampToValueAtTime(0.0001, now + durations[i] - 0.03);
+   
+   osc.connect(gain);
+   gain.connect(audioCtx.destination);
+   
+   osc.start(now);
+   osc.stop(now + durations[i]);
+   now += durations[i] + 0.05;
+  });
+
+  const totalDuration = (now - audioCtx.currentTime) * 1000;
+  loopTimeout = setTimeout(() => {
+   if(isAudioActive) playMelody();
+  }, totalDuration);
+
+ } catch(e) { console.log(e); }
+}
+
+function startAudio() {
+ isAudioActive = true;
+ musicBtn.textContent = "🔊";
+ playMelody();
+}
+
+function toggleMusic(){
+ if(!isAudioActive) {
+  startAudio();
+ } else {
+  isAudioActive = false;
+  if(loopTimeout) clearTimeout(loopTimeout);
+  if(audioCtx) audioCtx.suspend();
+  musicBtn.textContent = "🔇";
+ }
+}
+
+/* ELEMENTOS FLOTANTES FLUIDOS EN EL FONDO */
+function createAnimeBackground() {
+ const bgContainer = document.getElementById("anime-bg");
+ const assets = [
+  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png",
+  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png",
+  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/648.png",
+  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/175.png",
+  "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/39.png",
+  "🎻", "🌸", "🎶", "🎵", "✨", "🎼", "🌸"
+ ];
+ 
+ for(let i=0; i<18; i++) {
+  const item = assets[Math.floor(Math.random() * assets.length)];
+  const el = document.createElement("div");
+  el.className = "anime-item";
+  
+  if(item.startsWith("http")) {
+   el.innerHTML = `<img src="${item}" style="width:65px;height:65px;object-fit:contain;">`;
+  } else {
+   el.innerHTML = item;
+   el.style.fontSize = (32 + Math.random() * 18) + "px";
+   el.style.color = "#ffb8e4";
+   el.style.textShadow = "0 0 15px rgba(255,184,228,0.9)";
+  }
+  
+  el.style.left = Math.random() * 90 + "vw";
+  el.style.animationDuration = (6 + Math.random() * 5) + "s";
+  el.style.animationDelay = (Math.random() * 5) + "s";
+  bgContainer.appendChild(el);
+ }
+}
+
+button.addEventListener("click",()=>{
+ startAudio();
+ createAnimeBackground();
+
+ scene.classList.add("open");
+ confetti.innerHTML="";
+ balloons.innerHTML="";
+
+ for(let i=0;i<100;i++){
+  const b=document.createElement("i");
+  b.className="bit";
+  b.style.left=Math.random()*100+"vw";
+  b.style.setProperty("--c",colors[Math.floor(Math.random()*colors.length)]);
+  b.style.setProperty("--t",2.5+Math.random()*3+"s");
+  b.style.setProperty("--d",Math.random()*.6+"s");
+  b.style.setProperty("--x",(Math.random()-.5)*200+"px");
+  confetti.appendChild(b);
+ }
+
+ for(let i=0;i<14;i++){
+  const b=document.createElement("i");
+  b.className="balloon";
+  b.style.left=Math.random()*100+"vw";
+  b.style.setProperty("--c",colors[Math.floor(Math.random()*colors.length)]);
+  b.style.setProperty("--t",6+Math.random()*4+"s");
+  b.style.setProperty("--d",Math.random()*1.5+"s");
+  balloons.appendChild(b);
+ }
+
+ setTimeout(()=>{
+  cakeScene.classList.add("active");
+  for(let i=1;i<=4;i++){
+   setTimeout(()=> document.querySelector("#flame"+i).classList.add("lit"), i*700);
+  }
+  setTimeout(()=> instruction.classList.add("show"), 3000);
+ }, 3500);
+});
+
+function closeModal(id){
+ document.querySelector("#"+id).classList.remove("active");
+}
+
+const fullText = "Hola Anahís mira en este tiempo que nos llevamos conociendo me has parecido una persona increíble fantástica no sabes cuánto te aprecio me alegra haberte conocido hemos vivido muchas cosas juntos nos hemos reído nos hemos asustado jajaj nos hemos aconsejado y quiero que está fecha sea muy especial para ti que sepas que eres muy importantísima en mi vida y que te la pases increíble en esta fecha tan increíble para ti me alegro de haberte conocido hace casi más de dos años creo que locura! Te aprecio mucho y que disfrutes al máximo ahora sigue con el resto de velitas ♥️🫂";
+
+let charIndex = 0;
+function typeLetter(){
+ if(charIndex < fullText.length){
+  document.querySelector("#typed-text").textContent += fullText.charAt(charIndex);
+  charIndex++;
+  setTimeout(typeLetter, 35);
+ } else {
+  document.querySelector("#letter-close-btn").style.display = "inline-block";
+ }
+}
+
+document.querySelector("#c1").addEventListener("click", ()=>{
+ const f = document.querySelector("#flame1");
+ if(f.classList.contains("lit") && !f.classList.contains("out")){
+  f.classList.add("out");
+  document.querySelector("#letter-modal").classList.add("active");
+  if(charIndex === 0) typeLetter();
+  instruction.textContent = "✨ Ahora apaga la vela 2 (Juego) ✨";
+ }
+});
+
+document.querySelector("#c2").addEventListener("click", ()=>{
+ const f1 = document.querySelector("#flame1");
+ const f2 = document.querySelector("#flame2");
+ if(!f1.classList.contains("out")){ alert("¡Apaga la Vela 1 primero!"); return; }
+ if(f2.classList.contains("lit") && !f2.classList.contains("out")){
+  f2.classList.add("out");
+  document.querySelector("#game-modal").classList.add("active");
+  instruction.textContent = "✨ Ahora apaga la vela 3 (Test) ✨";
+ }
+});
+
+document.querySelector("#c3").addEventListener("click", ()=>{
+ const f2 = document.querySelector("#flame2");
+ const f3 = document.querySelector("#flame3");
+ if(!f2.classList.contains("out")){ alert("¡Apaga la Vela 2 primero!"); return; }
+ if(f3.classList.contains("lit") && !f3.classList.contains("out")){
+  f3.classList.add("out");
+  document.querySelector("#quiz-modal").classList.add("active");
+  loadQuizQuestion();
+  instruction.textContent = "✨ Ahora apaga la última vela (Raspa) ✨";
+ }
+});
+
+document.querySelector("#c4").addEventListener("click", ()=>{
+ const f3 = document.querySelector("#flame3");
+ const f4 = document.querySelector("#flame4");
+ if(!f3.classList.contains("out")){ alert("¡Apaga la Vela 3 primero!"); return; }
+ if(f4.classList.contains("lit") && !f4.classList.contains("out")){
+  f4.classList.add("out");
+  document.querySelector("#scratch-modal").classList.add("active");
+  initScratchCanvases();
+ }
+});
+
+let score = 0;
+const pokeImages = [
+ "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png",
+ "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png",
+ "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png",
+ "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/7.png",
+ "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
+ "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/39.png",
+ "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/175.png",
+ "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/151.png"
+];
+
+function tapPokeball(){
+ if(score < 150){
+  score += 10;
+  document.querySelector("#score").textContent = score;
+  const randomImg = pokeImages[Math.floor(Math.random()*pokeImages.length)];
+  document.querySelector("#poke-img-container").innerHTML = `<img src="${randomImg}" class="poke-img-display" alt="Pokemon">`;
+  
+  if(score >= 150){
+   document.querySelector("#game-result").style.display = "block";
+   document.querySelector(".pokeball-btn").style.pointerEvents = "none";
+  }
+ }
+}
+
+const quizData = [
+ {
+  q: "1. ¿Cómo te preparas para un día importante (salida, concierto o examen)?",
+  a: [
+   { text: "Me mentalizo con calma y buena vibra 💧", p: "Squirtle" },
+   { text: "Le pongo toda la pasión desde temprano 🔥", p: "Charmander" },
+   { text: "Me pongo enérgica y lista para brillar ⚡", p: "Pikachu" },
+   { text: "Voy relajada, improviso y que fluya 🦊", p: "Eevee" }
+  ]
+ },
+ {
+  q: "2. Si salimos a pasar el rato, ¿qué no puede faltar?",
+  a: [
+   { text: "Un buen helado o algo dulce 🌸", p: "Jigglypuff" },
+   { text: "Mucha risa, chistes y anécdotas 👻", p: "Gengar" },
+   { text: "Una plática tranquila de horas ✨", p: "Meloetta" },
+   { text: "Probar algo nuevo y delicioso 🥚", p: "Togepi" }
+  ]
+ },
+ {
+  q: "3. Cuando te pasa algo vergonzoso o chistoso en público...",
+  a: [
+   { text: "Me da un ataque de risa de mí misma 👻", p: "Gengar" },
+   { text: "Me sonrojo un poco pero disimulo 🦊", p: "Eevee" },
+   { text: "Busco a un amigo para reírnos juntos ⚡", p: "Pikachu" },
+   { text: "Súper relajada, ¡a cualquiera le pasa! 💧", p: "Squirtle" }
+  ]
+ },
+ {
+  q: "4. Si pudieras tener un talento mágico por un día...",
+  a: [
+   { text: "Tocar cualquier canción perfectamente a la primera 🎻", p: "Meloetta" },
+   { text: "Teletransportarme a cualquier lugar al instante ⚡", p: "Pikachu" },
+   { text: "Leer la mente para saber qué piensan 👻", p: "Gengar" },
+   { text: "Hacer aparecer helado gratis ilimitado 🍦", p: "Jigglypuff" }
+  ]
+ },
+ {
+  q: "5. Tus amigos te aprecian un montón porque eres...",
+  a: [
+   { text: "Súper tierna, detallista y siempre positiva 🥚", p: "Togepi" },
+   { text: "Divertida, alegre y sacas sonrisas a todos 🦊", p: "Eevee" },
+   { text: "Leal, apasionada y enfocada en lo que amas 🔥", p: "Charmander" },
+   { text: "Una combinación de talento, buena charla y gran corazón ✨", p: "Meloetta" }
+  ]
+ }
+];
+
+let currentQ = 0;
+const pokeScores = {};
+
+function loadQuizQuestion(){
+ if(currentQ < quizData.length){
+  document.querySelector("#quiz-question").textContent = quizData[currentQ].q;
+  const opts = document.querySelector("#quiz-options");
+  opts.innerHTML = "";
+  quizData[currentQ].a.forEach(opt => {
+   const div = document.createElement("div");
+   div.className = "quiz-option";
+   div.textContent = opt.text;
+   div.onclick = ()=>{
+    pokeScores[opt.p] = (pokeScores[opt.p] || 0) + 1;
+    currentQ++;
+    loadQuizQuestion();
+   };
+   opts.appendChild(div);
+  });
+ } else {
+  showQuizResult();
+ }
+}
+
+function showQuizResult(){
+ document.querySelector("#quiz-body").style.display = "none";
+ document.querySelector("#quiz-result").style.display = "block";
+ 
+ let topPoke = "Meloetta";
+ let maxScore = -1;
+ for(let p in pokeScores){
+  if(pokeScores[p] > maxScore){
+   maxScore = pokeScores[p];
+   topPoke = p;
+  }
+ }
+
+ const pokeDetails = {
+  Meloetta: { img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/648.png", title: "¡Eres Meloetta!", desc: "Tienes una alma artística brillante, llena de melodía, talento y una armonía hermosa que contagias a todos." },
+  Eevee: { img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png", title: "¡Eres un Eevee!", desc: "Súper alegre, versátil, adaptable y con un potencial infinito para brillar en todo lo que te propongas." },
+  Pikachu: { img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png", title: "¡Eres un Pikachu!", desc: "Energía pura, radiante y con una luz propia que le alegra el día a cualquiera instantáneamente." },
+  Jigglypuff: { img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/39.png", title: "¡Eres un Jigglypuff!", desc: "Dulce, encantadora, con un carisma único y un amor especial por los momentos felices y los helados." },
+  Charmander: { img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png", title: "¡Eres un Charmander!", desc: "Apasionada, leal, intensa en lo que amas y con una calidez de corazón que todos aprecian." },
+  Squirtle: { img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/7.png", title: "¡Eres un Squirtle!", desc: "Súper buena vibra, relajada, excelente escuchando y la mejor compañía para cualquier plan." },
+  Gengar: { img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/94.png", title: "¡Eres un Gengar divertido!", desc: "Juguetona, graciosa, experta en risas y con ese toque espontáneo que hace las cosas inolvidables." },
+  Togepi: { img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/175.png", title: "¡Eres un Togepi!", desc: "Pura ternura, buena suerte y un corazón enorme que llena de alegría a las personas que te rodean." }
+ };
+
+ const res = pokeDetails[topPoke] || pokeDetails["Meloetta"];
+ document.querySelector("#result-img-box").innerHTML = `<img src="${res.img}" class="poke-img-display" style="width:105px;height:105px" alt="${res.title}">`;
+ document.querySelector("#result-title").textContent = res.title;
+ document.querySelector("#result-desc").textContent = res.desc;
+}
+
+// RASPADITA CON TRAMPA INFALIBLE
+function initScratchCanvases(){
+ [1, 2, 3].forEach(id => {
+  const canvas = document.getElementById("scratchCanvas" + id);
+  const ctx = canvas.getContext("2d");
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  
+  ctx.fillStyle = "#959595";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold 13px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("✨ Raspa aquí ✨", canvas.width / 2, canvas.height / 2 + 5);
+ });
+}
+
+let trapTriggered = false;
+
+function startScratch(e, id){
+ const canvas = document.getElementById("scratchCanvas" + id);
+ const ctx = canvas.getContext("2d");
+ 
+ function scratchMove(ev){
+  const rect = canvas.getBoundingClientRect();
+  const x = (ev.clientX || ev.touches[0].clientX) - rect.left;
+  const y = (ev.clientY || ev.touches[0].clientY) - rect.top;
+  
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.beginPath();
+  ctx.arc(x, y, 22, 0, Math.PI * 2, false);
+  ctx.fill();
+  
+  checkScraped(canvas, id);
+ }
+
+ function stopScratch(){
+  window.removeEventListener('mousemove', scratchMove);
+  window.removeEventListener('mouseup', stopScratch);
+  window.removeEventListener('touchmove', scratchMove);
+  window.removeEventListener('touchend', stopScratch);
+ }
+
+ window.addEventListener('mousemove', scratchMove);
+ window.addEventListener('mouseup', stopScratch);
+ window.addEventListener('touchmove', scratchMove);
+ window.addEventListener('touchend', stopScratch);
+}
+
+function checkScraped(canvas, id){
+ const ctx = canvas.getContext("2d");
+ const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+ let cleared = 0;
+ for(let i = 3; i < pixels.data.length; i += 4){
+  if(pixels.data[i] === 0) cleared++;
+ }
+  
+ if(cleared > (pixels.data.length / 4) * 0.35 && !canvas.dataset.scraped){
+  canvas.dataset.scraped = "true";
+  
+  if(!trapTriggered){
+   triggerTrap(id);
+  }
+ }
+}
+
+function triggerTrap(chosenId){
+ trapTriggered = true;
+ 
+ const optionTexts = {
+  1: "🍦 Vale por un helado del que quieras",
+  2: "🛍️ Te compro lo que quieras (hasta $20)",
+  3: "🧸 Vale por un osito de peluche"
+ };
+
+ document.getElementById("c-content-" + chosenId).textContent = "🍦 Vale por un helado del que quieras";
+ document.getElementById("c-content-" + chosenId).className = "scratch-content green";
+
+ [1, 2, 3].forEach(i => {
+  if(i !== chosenId){
+   document.getElementById("scratchCanvas" + i).style.display = "none";
+   let lostText = "";
+   if(chosenId === 1) {
+    lostText = "❌ Oh no, perdiste esto: " + optionTexts[i];
+   } else {
+    if(i === 1) {
+     lostText = "❌ Oh no, perdiste esto: " + optionTexts[chosenId];
+    } else {
+     lostText = "❌ Oh no, perdiste esto: " + optionTexts[i];
+    }
+   }
+   document.getElementById("c-content-" + i).textContent = lostText;
+   document.getElementById("c-content-" + i).className = "scratch-content red";
+  }
+ });
+
+ const status = document.querySelector("#scratch-status");
+ status.style.color = "#ff758f";
+ status.textContent = "Oh no... ¡mira lo que perdiste 🤭!";
+
+ setTimeout(()=>{
+  document.body.classList.add("shake");
+  status.style.color = "#ffe27a";
+  status.textContent = "⚡ ¡¡ESPERA, ALGO ESTÁ PASANDO!! ⚡";
+
+  setTimeout(()=>{
+   document.body.classList.remove("shake");
+   for(let i=1; i<=3; i++){
+    document.getElementById("c-content-" + i).className = "scratch-content green";
+   }
+   document.getElementById("c-content-1").textContent = "🍦 Vale por un helado del que quieras";
+   document.getElementById("c-content-2").textContent = "🛍️ Te compro lo que quieras (hasta $20)";
+   document.getElementById("c-content-3").textContent = "🧸 Vale por un osito de peluche";
+
+   status.style.color = "#52b788";
+   status.style.fontSize = "15px";
+   status.textContent = "¡¡HAS GANADO TODO!! Reclámalo cuando quieras 🎁✨";
+   document.querySelector("#scratch-close").style.display = "inline-block";
+  }, 2000);
+
+ }, 1800);
+}
+
+function finishCandle4(){
+ closeModal('scratch-modal');
+ const dark = document.querySelector("#darkness-screen");
+ dark.classList._add("active");
+
+ setTimeout(()=>{
+  dark.classList.remove("active");
+  document.querySelector("#final-screen").classList.add("active");
+ }, 2500);
+}
+</script>
+</body>
+</html>
